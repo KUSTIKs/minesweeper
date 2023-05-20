@@ -26,15 +26,15 @@ class AuthPage(ctk.CTkFrame):
             text_color=STYLE_VARS.get("foreground"),
             font=("Helvetica", 24, "bold"),
         )
-        title.pack(pady=(0, 4))
+        title.pack(pady=(0, 4), anchor="w")
 
         subtitle = ctk.CTkLabel(
             master=container,
             text="Please log in or register to continue",
             text_color=STYLE_VARS.get("muted-foreground"),
-            font=("Helvetica", 14),
+            font=("Helvetica", 16),
         )
-        subtitle.pack(pady=(0, 20))
+        subtitle.pack(pady=(0, 20), anchor="w")
 
         username_input_wrapper = ctk.CTkFrame(
             master=container,
