@@ -2,12 +2,13 @@ import customtkinter as ctk
 
 from enums.pages import PageName
 from pages.auth import AuthPage
+from pages.game import GamePage
 from pages.menu import MenuPage
 from config import STYLE_VARS
 
 
-PAGES = {PageName.AUTH: AuthPage, PageName.MENU: MenuPage}
-DEFAULT_PAGE_NAME = PageName.MENU
+PAGES = {PageName.AUTH: AuthPage, PageName.MENU: MenuPage, PageName.GAME: GamePage}
+DEFAULT_PAGE_NAME = PageName.GAME
 
 
 class App(ctk.CTk):
