@@ -51,3 +51,5 @@ docs/_build/
 
 auth.db
 game_state.pkl
+
+.venv/
