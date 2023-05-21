@@ -100,6 +100,17 @@ class AuthPage(ctk.CTkFrame):
 
         container.pack(expand=True)
 
+    def create_table(self):
+        conn = sqlite3.connect("auth.db")
+        cursor = conn.cursor()
+
+        cursor.execute(
+            "CREATE TABLE IF NOT EXISTS users (username TEXT, password TEXT)"
+        )
+
+        conn.commit()
+        conn.close()
+
     def register_user(self, username, password):
         if (
             len(username) >= 4
@@ -107,12 +118,11 @@ class AuthPage(ctk.CTkFrame):
             and " " not in username
             and " " not in password
         ):
+            self.create_table()
+
             conn = sqlite3.connect("auth.db")
             cursor = conn.cursor()
 
-            cursor.execute(
-                "CREATE TABLE IF NOT EXISTS users (username TEXT, password TEXT)"
-            )
             cursor.execute(
                 "INSERT INTO users (username, password) VALUES (?, ?)",
                 (username, password),
@@ -131,6 +141,8 @@ class AuthPage(ctk.CTkFrame):
             )
 
     def login_user(self, username, password):
+        self.create_table()
+
         conn = sqlite3.connect("auth.db")
         cursor = conn.cursor()
 
