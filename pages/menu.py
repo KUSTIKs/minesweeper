@@ -3,6 +3,7 @@ from PIL import Image
 
 from components.button import Button, ButtonVariant
 from config import STYLE_VARS
+from enums.pages import PageName
 
 trophy_img = Image.open("assets/trophy.png")
 restore_img = Image.open("assets/restore.png")
@@ -53,14 +54,14 @@ class MenuPage(ctk.CTkFrame):
         )
         leaderboard_button.pack(padx=(0, 8), ipady=20, ipadx=20, side="left")
 
-        restore_button = Button(
-            master=buttons_wrapper,
-            text="Restore",
-            variant=ButtonVariant.SECONDARY,
-            image=ctk.CTkImage(restore_img.resize((24, 24))),
-            compound="top",
-        )
-        restore_button.pack(padx=(0, 8), ipady=20, ipadx=20, side="left")
+        # restore_button = Button(
+        #     master=buttons_wrapper,
+        #     text="Restore",
+        #     variant=ButtonVariant.SECONDARY,
+        #     image=ctk.CTkImage(restore_img.resize((24, 24))),
+        #     compound="top",
+        # )
+        # restore_button.pack(padx=(0, 8), ipady=20, ipadx=20, side="left")
 
         play_button = Button(
             master=buttons_wrapper,
@@ -68,6 +69,7 @@ class MenuPage(ctk.CTkFrame):
             variant=ButtonVariant.SECONDARY,
             image=ctk.CTkImage(play_img.resize((24, 24))),
             compound="top",
+            command=lambda: self.master.set_page(PageName.GAME),
         )
         play_button.pack(ipady=20, ipadx=20, side="right")
 

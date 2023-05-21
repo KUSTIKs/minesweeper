@@ -9,5 +9,12 @@ STYLE_VARS = {
     "primary-foreground": "#f8fafc",
     "accent": "#f1f5f9",
     "accent-foreground": "#0f1729",
+    "orange": "#FFA450",
+    "yellow": "#F7CF00",
+    "green": "#88D64B",
+    "lightblue": "#53C4E8",
+    "blue": "#5361E8",
+    "purple": "#9D53E8",
+    "pink": "#FB4499",
     "radius": 8,
 }

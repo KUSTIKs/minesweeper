@@ -7,7 +7,11 @@ from pages.menu import MenuPage
 from config import STYLE_VARS
 
 
-PAGES = {PageName.AUTH: AuthPage, PageName.MENU: MenuPage, PageName.GAME: GamePage}
+PAGES = {
+    PageName.AUTH: AuthPage,
+    PageName.MENU: MenuPage,
+    PageName.GAME: GamePage,
+}
 DEFAULT_PAGE_NAME = PageName.GAME
 
 
@@ -18,8 +22,7 @@ class App(ctk.CTk):
         )
 
         self.title("Minesweeper")
-        self.geometry("700x500")
-        self.resizable(False, False)
+        self.minsize(800, 600)
 
         self.__page = None
 
@@ -27,7 +30,7 @@ class App(ctk.CTk):
 
     def set_page(self, name: PageName):
         if self.__page:
-            self.__page.forget_pack()
+            self.__page.destroy()
 
         self.__page = PAGES[name](self)
 
