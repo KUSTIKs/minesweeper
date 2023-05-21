@@ -141,7 +141,7 @@ class GamePage(ctk.CTkFrame):
 
         controls_wrapper.pack()
 
-        self.container.pack(expand=True)
+        self.container.pack(expand=True, padx=16, pady=16)
 
         # Start a new game
         self.new_game()
@@ -263,7 +263,6 @@ class GamePage(ctk.CTkFrame):
     def open_settings(self):
         self.container.pack_forget()
         self.settings_frame.pack(expand=True)
-        self.settings_frame.lift()
 
     def on_difficulty_click(self, difficulty):
         self.difficulty = difficulty

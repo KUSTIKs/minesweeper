@@ -12,7 +12,7 @@ PAGES = {
     PageName.MENU: MenuPage,
     PageName.GAME: GamePage,
 }
-DEFAULT_PAGE_NAME = PageName.GAME
+DEFAULT_PAGE_NAME = PageName.AUTH
 
 
 class App(ctk.CTk):
