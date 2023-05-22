@@ -1,7 +1,7 @@
 import pickle
-from tkinter import messagebox
-import customtkinter as ctk
 import random
+import customtkinter as ctk
+from tkinter import messagebox
 from PIL import Image
 
 from components.button import Button, ButtonVariant
@@ -49,10 +49,6 @@ TILE_COLORS = [
 
 DEFAULT_DIFFICULTY = GameDifficulty.EASY
 
-ROWS = 9
-COLS = 9
-MINES = 10
-
 
 class GamePage(ctk.CTkFrame):
     def __init__(self, *args, **kwargs):
@@ -60,14 +56,18 @@ class GamePage(ctk.CTkFrame):
 
         self.user_db = UserDatabase()
 
-        self.difficulty = GameDifficulty.EASY
         self.tiles = []
         self.mines = set()
         self.game_state = None
 
+        self.difficulty = DEFAULT_DIFFICULTY
+        self.rows = GAME_DIFFICULTY_SETTINGS[self.difficulty]["rows"]
+        self.cols = GAME_DIFFICULTY_SETTINGS[self.difficulty]["cols"]
+        self.mines_count = GAME_DIFFICULTY_SETTINGS[self.difficulty]["mines_count"]
+
         self.settings_frame = DifficultySettings(
             master=self,
-            on_difficulty_click=self.on_difficulty_click,
+            on_difficulty_click=self.set_difficulty,
         )
 
         self.create_widgets()
@@ -99,9 +99,9 @@ class GamePage(ctk.CTkFrame):
 
         tiles_wrapper = ctk.CTkFrame(self.container, fg_color="transparent")
 
-        for row in range(ROWS):
+        for row in range(self.rows):
             tile_row = []
-            for col in range(COLS):
+            for col in range(self.cols):
                 tile = MinesweeperTile(
                     master=tiles_wrapper,
                     row=row,
@@ -146,7 +146,6 @@ class GamePage(ctk.CTkFrame):
 
         self.container.pack(expand=True, padx=16, pady=16)
 
-        # Start a new game
         self.new_game()
 
     def new_game(self):
@@ -160,17 +159,17 @@ class GamePage(ctk.CTkFrame):
                 tile.reset()
 
     def reset_minefield(self):
-        for row in range(ROWS):
-            for col in range(COLS):
+        for row in range(self.rows):
+            for col in range(self.cols):
                 if (row, col) in self.mines:
                     self.tiles[row][col].set_is_mine(False)
 
     def place_mines(self):
         self.mines = set()
         count = 0
-        while count < MINES:
-            row = random.randint(0, ROWS - 1)
-            col = random.randint(0, COLS - 1)
+        while count < self.mines_count:
+            row = random.randint(0, self.rows - 1)
+            col = random.randint(0, self.cols - 1)
             if not self.tiles[row][col].is_mine:
                 self.tiles[row][col].set_is_mine(True)
                 self.mines.add((row, col))
@@ -199,15 +198,15 @@ class GamePage(ctk.CTkFrame):
 
     def count_adjacent_mines(self, row, col):
         count = 0
-        for r in range(max(0, row - 1), min(row + 2, ROWS)):
-            for c in range(max(0, col - 1), min(col + 2, COLS)):
+        for r in range(max(0, row - 1), min(row + 2, self.rows)):
+            for c in range(max(0, col - 1), min(col + 2, self.cols)):
                 if self.tiles[r][c].is_mine:
                     count += 1
         return count
 
     def reveal_empty_cells(self, row, col):
-        for r in range(max(0, row - 1), min(row + 2, ROWS)):
-            for c in range(max(0, col - 1), min(col + 2, COLS)):
+        for r in range(max(0, row - 1), min(row + 2, self.rows)):
+            for c in range(max(0, col - 1), min(col + 2, self.cols)):
                 tile = self.tiles[r][c]
                 if not tile.is_mine and not tile.is_revealed:
                     mine_count = self.count_adjacent_mines(r, c)
@@ -228,14 +227,18 @@ class GamePage(ctk.CTkFrame):
         remaining_tiles = sum(
             1 for row in self.tiles for tile in row if not tile.is_revealed
         )
-        if remaining_tiles == MINES:
+        if remaining_tiles == self.mines_count:
             messagebox.showinfo("Congratulations", "You won the game")
 
             if self.master.user:
                 self.user_db.update_wins_count(self.master.username)
 
     def save_game_state(self):
-        self.game_state = []
+        self.game_state = {
+            "difficulty": self.difficulty,
+            "tiles": [],
+        }
+
         for row in self.tiles:
             row_state = []
             for tile in row:
@@ -246,7 +249,7 @@ class GamePage(ctk.CTkFrame):
                     "is_revealed": tile.is_revealed,
                 }
                 row_state.append(tile_state)
-            self.game_state.append(row_state)
+            self.game_state["tiles"].append(row_state)
         with open("game_state.pkl", "wb") as file:
             pickle.dump(self.game_state, file)
         messagebox.showinfo("Game Saved", "Game state saved successfully.")
@@ -255,7 +258,9 @@ class GamePage(ctk.CTkFrame):
         try:
             with open("game_state.pkl", "rb") as file:
                 self.game_state = pickle.load(file)
-            for row, row_state in enumerate(self.game_state):
+            self.container.destroy()
+            self.set_difficulty(self.game_state["difficulty"])
+            for row, row_state in enumerate(self.game_state["tiles"]):
                 for col, tile_state in enumerate(row_state):
                     tile = self.tiles[row][col]
                     tile.set_number(tile_state["number"])
@@ -267,14 +272,24 @@ class GamePage(ctk.CTkFrame):
             messagebox.showerror("File Not Found", "No saved game state found.")
 
     def open_settings(self):
-        self.container.pack_forget()
+        self.container.destroy()
         self.settings_frame.pack(expand=True)
 
-    def on_difficulty_click(self, difficulty):
+    def set_difficulty(self, difficulty):
+        self.container.destroy()
         self.difficulty = difficulty
         self.settings_frame.pack_forget()
-        self.container.pack()
-        self.new_game()
+        self.update_game_settings()
+
+        self.tiles = []
+        self.mines = set()
+
+        self.create_widgets()
+
+    def update_game_settings(self):
+        self.rows = GAME_DIFFICULTY_SETTINGS[self.difficulty]["rows"]
+        self.cols = GAME_DIFFICULTY_SETTINGS[self.difficulty]["cols"]
+        self.mines_count = GAME_DIFFICULTY_SETTINGS[self.difficulty]["mines_count"]
 
     def back_to_menu(self):
         self.master.set_page(PageName.MENU)

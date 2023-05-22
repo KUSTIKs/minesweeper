@@ -1,11 +1,9 @@
 import customtkinter as ctk
-from tkinter import ttk
+
 from components.button import Button, ButtonVariant
-from config import STYLE_VARS
-
-from enums.pages import PageName
-
 from helpers.user_database import UserDatabase
+from enums.pages import PageName
+from config import STYLE_VARS
 
 
 class LeaderboardPage(ctk.CTkFrame):
@@ -19,7 +17,10 @@ class LeaderboardPage(ctk.CTkFrame):
         self.pack_configure(expand=True, fill="y")
 
     def create_widegets(self):
-        container = ctk.CTkFrame(master=self, fg_color="transparent", width=500)
+        container = ctk.CTkFrame(
+            master=self,
+            fg_color="transparent",
+        )
 
         top_bar = ctk.CTkFrame(master=container, fg_color="transparent")
 
@@ -40,11 +41,12 @@ class LeaderboardPage(ctk.CTkFrame):
         )
         title.pack(side="left")
 
-        top_bar.pack(pady=(0, 16), fill="y", anchor="w")
+        top_bar.pack(pady=(0, 16), anchor="w")
 
-        table = ctk.CTkFrame(
+        table = ctk.CTkScrollableFrame(
             master=container,
             fg_color="transparent",
+            width=500,
         )
 
         table.columnconfigure(0, weight=1)
@@ -66,7 +68,7 @@ class LeaderboardPage(ctk.CTkFrame):
                 column=col,
                 padx=10,
                 pady=5,
-                sticky="sw",
+                sticky="w",
             )
 
         for row, row_data in enumerate(data):
@@ -82,12 +84,11 @@ class LeaderboardPage(ctk.CTkFrame):
                     column=col,
                     padx=10,
                     pady=5,
-                    sticky="sw",
+                    sticky="w",
                 )
 
         table.pack(expand=True, fill="both")
 
-        container.pack_propagate(False)
         container.pack(expand=True, fill="y", padx=20, pady=20)
 
     def back_to_menu(self):
