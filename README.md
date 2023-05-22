@@ -1,7 +1,6 @@
 # Minesweeper Game
 
-![banner](https://github.com/KUSTIKs/minesweeper/assets/62993891/381dfcb2-6e70-4862-a59e-29b1873ba403)
-
+![banner](https://github.com/KUSTIKs/minesweeper/assets/62993891/4e41fc31-9bbb-4b25-a39a-7e7fa598a54a)
 
 This is a classic implementation of the Minesweeper game using Python and the Tkinter library for the graphical user interface.
 
@@ -11,7 +10,7 @@ The Minesweeper game features a user authentication system, a menu page with opt
 
 ## Screenshots
 
-![screenshots](https://github.com/KUSTIKs/minesweeper/assets/62993891/8b780f1f-e0fc-4767-b962-ed15102515ea)
+![screenshots](https://github.com/KUSTIKs/minesweeper/assets/62993891/233487f3-bf7b-4a11-a66a-2607230dfde0)
 
 ## How to Run
 
