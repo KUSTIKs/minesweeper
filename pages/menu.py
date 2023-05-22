@@ -51,6 +51,7 @@ class MenuPage(ctk.CTkFrame):
             variant=ButtonVariant.SECONDARY,
             image=ctk.CTkImage(trophy_img.resize((24, 24))),
             compound="top",
+            command=lambda: self.master.set_page(PageName.LEADERBOARD),
         )
         leaderboard_button.pack(padx=(0, 8), ipady=20, ipadx=20, side="left")
 

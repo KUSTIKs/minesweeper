@@ -1,4 +1,3 @@
-import sqlite3
 import customtkinter as ctk
 from tkinter import messagebox
 
@@ -6,14 +5,14 @@ from components.button import Button, ButtonVariant
 from components.input import TextInput
 from enums.pages import PageName
 from config import STYLE_VARS
+from helpers.user_database import UserDatabase
 
 
 class AuthPage(ctk.CTkFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs, fg_color="transparent")
-
+        self.user_db = UserDatabase()
         self.create_widgets()
-
         self.pack_configure(expand=True)
 
     def create_widgets(self):
@@ -100,60 +99,15 @@ class AuthPage(ctk.CTkFrame):
 
         container.pack(expand=True)
 
-    def create_table(self):
-        conn = sqlite3.connect("auth.db")
-        cursor = conn.cursor()
-
-        cursor.execute(
-            "CREATE TABLE IF NOT EXISTS users (username TEXT, password TEXT)"
-        )
-
-        conn.commit()
-        conn.close()
-
     def register_user(self, username, password):
-        if (
-            len(username) >= 4
-            and len(password) >= 6
-            and " " not in username
-            and " " not in password
-        ):
-            self.create_table()
-
-            conn = sqlite3.connect("auth.db")
-            cursor = conn.cursor()
-
-            cursor.execute(
-                "INSERT INTO users (username, password) VALUES (?, ?)",
-                (username, password),
-            )
-
-            conn.commit()
-            conn.close()
-            messagebox.showinfo("Registration Successful", "Registration successful!")
-        else:
-            messagebox.showerror(
-                "Invalid Input",
-                "Invalid username or password. "
-                "Make sure the username has at least 4 characters, "
-                "the password has at least 6 characters, "
-                "and neither contain spaces.",
-            )
+        self.user_db.register_user(username, password)
 
     def login_user(self, username, password):
-        self.create_table()
-
-        conn = sqlite3.connect("auth.db")
-        cursor = conn.cursor()
-
-        cursor.execute(
-            "SELECT * FROM users WHERE username=? AND password=?", (username, password)
-        )
-        result = cursor.fetchone()
-
-        conn.close()
-
-        if result:
+        if self.user_db.login_user(username, password):
+            self.master.set_username(username)
             self.master.set_page(PageName.MENU)
         else:
             messagebox.showerror("Login Failed", "Invalid username or password.")
+
+    def __del__(self):
+        self.user_db.close_connection()

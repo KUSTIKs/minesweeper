@@ -6,8 +6,9 @@ from PIL import Image
 
 from components.button import Button, ButtonVariant
 from enums.difficulty import GameDifficulty
-from config import STYLE_VARS
+from helpers.user_database import UserDatabase
 from enums.pages import PageName
+from config import STYLE_VARS
 
 difficulty_simple_img = Image.open("assets/difficulty-easy.png")
 difficulty_medium_img = Image.open("assets/difficulty-medium.png")
@@ -57,6 +58,8 @@ class GamePage(ctk.CTkFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs, fg_color="transparent")
 
+        self.user_db = UserDatabase()
+
         self.difficulty = GameDifficulty.EASY
         self.tiles = []
         self.mines = set()
@@ -80,7 +83,7 @@ class GamePage(ctk.CTkFrame):
             master=top_bar,
             variant=ButtonVariant.SECONDARY,
             text="Back",
-            command=lambda: self.master.set_page(PageName.MENU),
+            command=self.back_to_menu,
         )
         back_button.pack(side=ctk.LEFT, padx=(0, 8))
 
@@ -228,6 +231,9 @@ class GamePage(ctk.CTkFrame):
         if remaining_tiles == MINES:
             messagebox.showinfo("Congratulations", "You won the game")
 
+            if self.master.user:
+                self.user_db.update_wins_count(self.master.username)
+
     def save_game_state(self):
         self.game_state = []
         for row in self.tiles:
@@ -269,6 +275,12 @@ class GamePage(ctk.CTkFrame):
         self.settings_frame.pack_forget()
         self.container.pack()
         self.new_game()
+
+    def back_to_menu(self):
+        self.master.set_page(PageName.MENU)
+
+    def __del__(self):
+        self.user_db.close_connection()
 
 
 class MinesweeperTile(ctk.CTkButton):
